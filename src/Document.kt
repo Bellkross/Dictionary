@@ -16,11 +16,13 @@ class Document(pathname: String, val id: Int) {
 
     /** All content of document in List<String> object */
     val dictionary: MutableList<String> = content.split(regex).filter { string -> string != "" }.toMutableList()
-    val twoWordDictionary: MutableList<String> = ArrayList()
 
     /** Position of each word in document */
     var positions: TreeMap<String, MutableList<Int>> = TreeMap()
-    val twoWordPositions: TreeMap<String, MutableList<Int>> = TreeMap()
+
+    /** wo-word dictionary and positions */
+    val twDictionary: MutableList<String> = ArrayList()
+    val twPositions: TreeMap<String, MutableList<Int>> = TreeMap()
 
     /** Adding positions for all words from document dictionary */
     init {
@@ -37,18 +39,18 @@ class Document(pathname: String, val id: Int) {
 
         dictionary.forEachIndexed { i, k ->
             if (i + 2 < dictionary.size && k != "") {
-                twoWordDictionary.add(k + "," + dictionary[i + 1])
-                //println("$i -> ${k + "," + dictionary[i + 1]}")
+                twDictionary.add(k + " " + dictionary[i + 1])
+                //println("$i -> ${k + " " + dictionary[i + 1]}")
             }
         }
 
-        twoWordDictionary.forEachIndexed { i, k ->
-            if (twoWordPositions.containsKey(k)) {
-                twoWordPositions[k]?.add(i)
+        twDictionary.forEachIndexed { i, k ->
+            if (twPositions.containsKey(k)) {
+                twPositions[k]?.add(i)
             } else {
                 list = ArrayList(1)
                 list.add(i)
-                twoWordPositions[k] = list
+                twPositions[k] = list
             }
         }
 

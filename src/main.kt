@@ -15,8 +15,9 @@ fun main(args: Array<String>) {
     fileCoordinateInvertedIndex.bufferedWriter().use { out ->
         dictionary.list.forEach { key ->
             if(!key.isEmpty()) out.write("$key -> ${dictionary.coordinateInvertedIndex[key].toString()}\n")
-            //out.write("$key\n")
         }
     }
+
+    println( dictionary.find("Харриман уже двенадцать лет возглавлявший Исследовательский центр", 1) )
 
 }
