@@ -6,9 +6,7 @@ class Document(pathname: String, val id: Int) {
 
     /** Regex for splitting words */
     companion object {
-        //val regex: Regex = "([^a-zA-Z']+)'*\\1*".toRegex()
         val regex: Regex = "([^а-яА-Яa-zA-Z']+)'*\\1*".toRegex()
-        //val regex: Regex = "[ \r\n-,.-]".toRegex()
     }
 
     /** All content of document in String object */
@@ -40,7 +38,6 @@ class Document(pathname: String, val id: Int) {
         dictionary.forEachIndexed { i, k ->
             if (i + 2 < dictionary.size && k != "") {
                 twDictionary.add(k + " " + dictionary[i + 1])
-                //println("$i -> ${k + " " + dictionary[i + 1]}")
             }
         }
 
