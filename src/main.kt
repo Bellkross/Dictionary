@@ -39,8 +39,15 @@ fun main(args: Array<String>) {
 
     run {
         println(dictionary.trigramFind("Gla*st*ne"))
-        println(dictionary.bigramFind("Gla*s*ne"))
+        println(dictionary.bigramFind("Gla*e"))
         println( dictionary.find("Харриман вот уже лет", 10) )
+        /*
+        [$Gl, Gla, ne$]
+        {9=[48966, 49649]}
+        [$G, Gl, la, e$]
+        {9=[48966, 49649]}
+        {2=[28]}
+         */
     }
 
 }
