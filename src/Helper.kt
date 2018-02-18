@@ -69,6 +69,95 @@ class Helper {
         return result
     }
 
+    fun mergeFiles2(path1: String, path2: String, resPath: String) {
+        val file1 = File(path1)
+        val file2 = File(path2)
+
+        val res = HashMap<String, HashSet<Int>>()
+
+        var string1: String? = ""
+        var string2: String? = ""
+        var word1 = ""
+        var word2 = ""
+        var treeSetWords = TreeSet<String>()
+
+        var resString = ""
+
+        val fileResult = File(resPath)
+        file1.bufferedReader().use { br1 ->
+            file2.bufferedReader().use { br2 ->
+
+                string1 = br1.readLine()
+                string2 = br2.readLine()
+                while (string1 != null && string2 != null) {
+
+                    word1 = getWordFromCoordinateIndex(string1!!)
+                    word2 = getWordFromCoordinateIndex(string2!!)
+                    treeSetWords.add(word1)
+                    treeSetWords.add(word2)
+                    if (word1 == word2) {
+                        res[word1] = parseStringToMutableList(string1!!)
+                        parseStringToMutableList(string2!!).forEach {
+                            res[word1]!!.add(it)
+                        }
+                        resString += "$word1 -> ${res[word1].toString()}\n"
+/*
+                        fileResult.bufferedWriter().use { out ->
+                            out.write("$word1 -> ${res[word1].toString()}\n")
+                        }
+*/
+                        string1 = br1.readLine()
+                        string2 = br2.readLine()
+                    } else {
+                        when {
+                            treeSetWords.last()==word2 -> {
+                                res[word1] = parseStringToMutableList(string1!!)
+                                /*
+                                fileResult.bufferedWriter().use { out ->
+                                    out.write("$word1 -> ${res[word1].toString()}\n")
+                                }
+                                */
+                                resString += "$word1 -> ${res[word1].toString()}\n"
+                                string1 = br1.readLine()
+                            }
+                            else -> {
+                                res[word2] = parseStringToMutableList(string2!!)
+                                /*
+                                fileResult.bufferedWriter().use { out ->
+                                    out.write("$word2 -> ${res[word2].toString()}\n")
+                                }
+                                */
+                                resString += "$word2 -> ${res[word2].toString()}\n"
+                                string2 = br2.readLine()
+                            }
+                        }
+                    }
+                    treeSetWords.clear()
+                }
+
+                while (string1 == null && string2 != null) {
+                    word2 = getWordFromCoordinateIndex(string2!!)
+                    res[word2] = parseStringToMutableList(string2!!)
+                    //fileResult.appendText("$word2 -> ${res[word2].toString()}\n")
+                    resString += "$word2 -> ${res[word2].toString()}\n"
+                    string2 = br2.readLine()
+                }
+                while (string1 != null && string2 == null) {
+                    word1 = getWordFromCoordinateIndex(string1!!)
+                    res[word1] = parseStringToMutableList(string1!!)
+                    //fileResult.appendText("$word1 -> ${res[word1].toString()}\n")
+                    resString += "$word1 -> ${res[word1].toString()}\n"
+                    string1 = br1.readLine()
+                }
+
+            }
+        }
+        fileResult.bufferedWriter().use { out ->
+            out.write(resString)
+        }
+
+    }
+
     //p1&p2 -> p1
     fun mergeFiles(path1: String, path2: String, resPath: String) {
         val file1 = File(path1)

@@ -19,7 +19,7 @@ class Document(pathname: String, val id: Int) {
     /** Position of each word in document */
     var positions: HashMap<String, MutableList<Int>> = HashMap()
 
-    /** wo-word dictionary and positions */
+    /** two-word dictionary and positions */
     val twDictionary: MutableList<String> = ArrayList()
     val twPositions: HashMap<String, MutableList<Int>> = HashMap()
 

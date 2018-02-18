@@ -1,4 +1,3 @@
-import java.io.File
 import java.lang.Math.abs
 import java.util.*
 import kotlin.collections.HashMap
@@ -8,6 +7,7 @@ class Dictionary {
     val helper = Helper()
 
     var list: TreeSet<String> = TreeSet()
+    var invertedIndex: HashMap<String, MutableList<Int>> = HashMap()
     var coordinateInvertedIndex: HashMap<String, HashMap<Int, MutableList<Int>>> = HashMap()
 
     var twList: MutableList<String> = LinkedList()
@@ -34,22 +34,28 @@ class Dictionary {
         val positions: HashMap<String, MutableList<Int>> = document.positions
 
         tokens.forEach { k ->
-            if (!coordinateInvertedIndex.contains(k)) {
-                coordinateInvertedIndex[k] = HashMap()
-                coordinateInvertedIndex[k]!![documentId] = positions[k]!!
-                //tree
-                //tree.put(k, HashMap())
-                //tree.get(k)[documentId] = positions[k]!!
+            /*            if (!coordinateInvertedIndex.contains(k)) {
+                            coordinateInvertedIndex[k] = HashMap()
+                            coordinateInvertedIndex[k]!![documentId] = positions[k]!!
 
-            } else if (!coordinateInvertedIndex[k]!!.contains(documentId)) {
-                coordinateInvertedIndex[k]!![documentId] = positions[k]!!
+                            //tree
+                            //tree.put(k, HashMap())
+                            //tree.get(k)[documentId] = positions[k]!!
 
-                //tree
-                //tree.get(k)[documentId] = positions[k]!!
+                        } else if (!coordinateInvertedIndex[k]!!.contains(documentId)) {
+                            coordinateInvertedIndex[k]!![documentId] = positions[k]!!
+
+                            //tree
+                            //tree.get(k)[documentId] = positions[k]!!
+                        }
+            */
+            if (!invertedIndex.contains(k)) {
+                invertedIndex[k] = ArrayList()
+                invertedIndex[k]!!.add(documentId)
             }
         }
 
-        list.addAll(coordinateInvertedIndex.keys)
+        list.addAll(invertedIndex.keys)
         list = TreeSet<String>(list)
 
 

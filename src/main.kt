@@ -12,15 +12,59 @@ var dictionary: Dictionary = Dictionary()
 val helper = Helper()
 
 fun main(args: Array<String>) {
+    val resFiles = ArrayList<File>()
+    var fileInvertedIndex : File
+
 
     val time1 : Long = LocalTime.now().toNanoOfDay()
 
+    val lim = 170544104
+    var j = 0
+
+    files.forEachIndexed { i, file ->
+        dictionary.addDocument(Document(file.absolutePath, i))
+        //        println("free memory -> ${Runtime.getRuntime().freeMemory()}")
+        if (Runtime.getRuntime().freeMemory() < lim) {
+            println("free memory < $lim bytes")
+            fileInvertedIndex = File("${j}_${i}outputInvertedIndex.txt")
+            resFiles.add(fileInvertedIndex)
+            fileInvertedIndex.bufferedWriter().use { out ->
+                dictionary.list.forEach { key ->
+                    if (!key.isEmpty()) out.write("$key -> ${dictionary.invertedIndex[key].toString()}\n")
+                }
+            }
+            dictionary.invertedIndex.clear()
+            dictionary.list.clear()
+            j = i
+        }
+    }
+
+    fileInvertedIndex = File("last_outputInvertedIndex.txt")
+    resFiles.add(fileInvertedIndex)
+    fileInvertedIndex.bufferedWriter().use { out ->
+        dictionary.list.forEach { key ->
+            if (!key.isEmpty()) out.write("$key -> ${dictionary.invertedIndex[key].toString()}\n")
+        }
+    }
+
+    println("let's merge!")
+
+    File("fileII.txt").createNewFile()
+    val file = File("fileII.txt")
+    resFiles.forEach {
+        helper.mergeFiles2(file.path, it.path, file.path)
+        println("file ${file.path} and ${it.path} merged into ${file.path}")
+    }
+
+/*
+coordinated index
     val resFiles = ArrayList<File>()
     var fileCoordinateInvertedIndex : File
 
     val lim = 170544104
     var j = 0
     files.forEachIndexed { i, file ->
+        dictionary.addDocument(Document(file.absolutePath, i))
 //        println("free memory -> ${Runtime.getRuntime().freeMemory()}")
         if (Runtime.getRuntime().freeMemory() < lim) {
             println("free memory < $lim bytes")
@@ -35,7 +79,6 @@ fun main(args: Array<String>) {
             dictionary.list.clear()
             j = i
         }
-        dictionary.addDocument(Document(file.absolutePath, i))
     }
 
 
@@ -46,7 +89,6 @@ fun main(args: Array<String>) {
             if (!key.isEmpty()) out.write("$key -> ${dictionary.coordinateInvertedIndex[key].toString()}\n")
         }
     }
-
     println("let's merge!")
 
     File("file.txt").createNewFile()
@@ -55,6 +97,7 @@ fun main(args: Array<String>) {
         helper.mergeFiles(file.path, it.path, file.path)
         println("file ${file.path} and ${it.path} merged into ${file.path}")
     }
+*/
 
     val time2 = LocalTime.now().toNanoOfDay()
 
