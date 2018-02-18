@@ -1,27 +1,29 @@
+import java.io.File
 import java.lang.Math.abs
 import java.util.*
+import kotlin.collections.HashMap
 
 class Dictionary {
 
     val helper = Helper()
 
-    var list: MutableList<String> = LinkedList()
-    var coordinateInvertedIndex: TreeMap<String, TreeMap<Int, MutableList<Int>>> = TreeMap()
+    var list: TreeSet<String> = TreeSet()
+    var coordinateInvertedIndex: HashMap<String, HashMap<Int, MutableList<Int>>> = HashMap()
 
     var twList: MutableList<String> = LinkedList()
-    var twoWordCoordinateIndex: TreeMap<String, TreeMap<Int, MutableList<Int>>> = TreeMap()
+    var twoWordCoordinateIndex: HashMap<String, HashMap<Int, MutableList<Int>>> = HashMap()
 
 
     ////////////////////////////////////////////////////////////////////////////////////////
-    var tree: BTree<String, TreeMap<Int, MutableList<Int>>> = BTree()
+    var tree: BTree<String, HashMap<Int, MutableList<Int>>> = BTree()
 
-    var permutationIndex: TreeMap<String, MutableList<String>> = TreeMap()
+    var permutationIndex: HashMap<String, MutableList<String>> = HashMap()
 
     var trigramList: TreeSet<String> = TreeSet()
-    var trigramIndex: TreeMap<String, MutableList<String>> = TreeMap()
+    var trigramIndex: HashMap<String, MutableList<String>> = HashMap()
 
     var bigramList: TreeSet<String> = TreeSet()
-    var bigramIndex: TreeMap<String, MutableList<String>> = TreeMap()
+    var bigramIndex: HashMap<String, MutableList<String>> = HashMap()
     ////////////////////////////////////////////////////////////////////////////////////////
 
     fun addDocument(document: Document) {
@@ -29,34 +31,36 @@ class Dictionary {
 
         //coordinate index + tree
         val tokens = document.dictionary
-        val positions: TreeMap<String, MutableList<Int>> = document.positions
+        val positions: HashMap<String, MutableList<Int>> = document.positions
 
         tokens.forEach { k ->
             if (!coordinateInvertedIndex.contains(k)) {
-                coordinateInvertedIndex[k] = TreeMap()
+                coordinateInvertedIndex[k] = HashMap()
                 coordinateInvertedIndex[k]!![documentId] = positions[k]!!
                 //tree
-                tree.put(k, TreeMap())
-                tree.get(k)[documentId] = positions[k]!!
+                //tree.put(k, HashMap())
+                //tree.get(k)[documentId] = positions[k]!!
 
             } else if (!coordinateInvertedIndex[k]!!.contains(documentId)) {
                 coordinateInvertedIndex[k]!![documentId] = positions[k]!!
 
                 //tree
-                tree.get(k)[documentId] = positions[k]!!
+                //tree.get(k)[documentId] = positions[k]!!
             }
         }
 
         list.addAll(coordinateInvertedIndex.keys)
-        list = TreeSet<String>(list).toMutableList()
+        list = TreeSet<String>(list)
 
+
+/*
         //two-word index
         val twTokens = document.twDictionary
-        val twPositions: TreeMap<String, MutableList<Int>> = document.twPositions
+        val twPositions: HashMap<String, MutableList<Int>> = document.twPositions
 
         twTokens.forEach { k ->
             if (!twoWordCoordinateIndex.contains(k)) {
-                twoWordCoordinateIndex[k] = TreeMap()
+                twoWordCoordinateIndex[k] = HashMap()
                 twoWordCoordinateIndex[k]!![documentId] = twPositions[k]!!
             } else {
                 if (!twoWordCoordinateIndex[k]!!.containsKey(documentId)) {
@@ -68,7 +72,6 @@ class Dictionary {
         twList.addAll(twoWordCoordinateIndex.keys)
         twList = TreeSet<String>(twList).toMutableList()
         ////////////////////////////////////////////////////////////////////////////////////////
-
         //permutation index
         list.forEach {
             permutationIndex[it] = helper.permutationIndex(it)
@@ -103,23 +106,23 @@ class Dictionary {
                 }
             }
         }
-
+*/
         ////////////////////////////////////////////////////////////////////////////////////////
     }
 
-    fun find(string: String, inputDistance: Int): TreeMap<Int, MutableList<Int>> {
+    fun find(string: String, inputDistance: Int): HashMap<Int, MutableList<Int>> {
         if (string.isEmpty()) {
-            return TreeMap()
+            return HashMap()
         }
 
         var distance = inputDistance
-        var strings: MutableList<String> = string.split(Document.regex).toMutableList()
+        val strings: MutableList<String> = string.split(Document.regex).toMutableList()
         var filesIndex: MutableList<Int>
         var wordsIndex: MutableList<Int>
-        var result: TreeMap<Int, MutableList<Int>> = TreeMap()
+        val result: HashMap<Int, MutableList<Int>> = HashMap()
 
         if (!coordinateInvertedIndex.containsKey(strings[0])) {
-            return TreeMap()
+            return HashMap()
         } else {
             filesIndex = coordinateInvertedIndex[strings[0]]!!.keys.toMutableList()
         }
@@ -144,11 +147,11 @@ class Dictionary {
         return result
     }
 
-    fun trigramFind(inputString: String): TreeMap<Int, MutableList<Int>> {
+    fun trigramFind(inputString: String): HashMap<Int, MutableList<Int>> {
 
         val k = 3;
 
-        var result: TreeMap<Int, MutableList<Int>> = TreeMap()
+        var result: HashMap<Int, MutableList<Int>> = HashMap()
         var listOfWords: MutableList<String> = LinkedList()
         val list = inputString.split('*')
         var string1 = ""
@@ -161,12 +164,12 @@ class Dictionary {
                 when {
                     list[1] == "" -> {
                         string1 = "${list[0]}"
-                        trigrams = helper.kgramIndex2(string1,k)
+                        trigrams = helper.kgramIndex2(string1, k)
                         println("$string1 -> $trigrams")
                     }
                     else -> {
                         string1 = "${list[1]}"
-                        trigrams = helper.kgramIndex3(string1,k)
+                        trigrams = helper.kgramIndex3(string1, k)
                         println("$string1 -> $trigrams")
                     }
                 }
@@ -190,8 +193,8 @@ class Dictionary {
                 string2 = "${list[list.lastIndex]}"
                 //if string2.size <= 2
                 //...
-                trigrams = helper.kgramIndex2(string1,k)
-                trigrams.addAll(helper.kgramIndex3(string2,k))
+                trigrams = helper.kgramIndex2(string1, k)
+                trigrams.addAll(helper.kgramIndex3(string2, k))
 
                 println("$trigrams")
                 //trigrams.foreach intersect trigram list
@@ -206,7 +209,7 @@ class Dictionary {
             }
         }
 
-        if (listOfWords.isEmpty()) return TreeMap()
+        if (listOfWords.isEmpty()) return HashMap()
 
         listOfWords.forEach {
             //here
@@ -221,11 +224,11 @@ class Dictionary {
         return result
     }
 
-    fun bigramFind(inputString: String): TreeMap<Int, MutableList<Int>> {
+    fun bigramFind(inputString: String): HashMap<Int, MutableList<Int>> {
 
         val k = 2;
 
-        var result: TreeMap<Int, MutableList<Int>> = TreeMap()
+        var result: HashMap<Int, MutableList<Int>> = HashMap()
         var listOfWords: MutableList<String> = LinkedList()
         val list = inputString.split('*')
         var string1 = ""
@@ -238,12 +241,12 @@ class Dictionary {
                 when {
                     list[1] == "" -> {
                         string1 = "${list[0]}"
-                        bigrams = helper.kgramIndex2(string1,k)
+                        bigrams = helper.kgramIndex2(string1, k)
                         println("$string1 -> $bigrams")
                     }
                     else -> {
                         string1 = "${list[1]}"
-                        bigrams = helper.kgramIndex3(string1,k)
+                        bigrams = helper.kgramIndex3(string1, k)
                         println("$string1 -> $bigrams")
                     }
                 }
@@ -267,8 +270,8 @@ class Dictionary {
                 string2 = "${list[list.lastIndex]}"
                 //if string2.size <= 2
                 //...
-                bigrams = helper.kgramIndex2(string1,k)
-                bigrams.addAll(helper.kgramIndex3(string2,k))
+                bigrams = helper.kgramIndex2(string1, k)
+                bigrams.addAll(helper.kgramIndex3(string2, k))
 
                 println("$bigrams")
                 //bigrams.foreach intersect trigram list
@@ -283,7 +286,7 @@ class Dictionary {
             }
         }
 
-        if (listOfWords.isEmpty()) return TreeMap()
+        if (listOfWords.isEmpty()) return HashMap()
 
         listOfWords.forEach {
             //here

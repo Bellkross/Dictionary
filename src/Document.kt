@@ -1,6 +1,7 @@
 import java.io.File
 import java.util.*
 import kotlin.collections.ArrayList
+import kotlin.collections.HashMap
 
 class Document(pathname: String, val id: Int) {
 
@@ -16,11 +17,11 @@ class Document(pathname: String, val id: Int) {
     val dictionary: MutableList<String> = content.split(regex).filter { string -> string != "" }.toMutableList()
 
     /** Position of each word in document */
-    var positions: TreeMap<String, MutableList<Int>> = TreeMap()
+    var positions: HashMap<String, MutableList<Int>> = HashMap()
 
     /** wo-word dictionary and positions */
     val twDictionary: MutableList<String> = ArrayList()
-    val twPositions: TreeMap<String, MutableList<Int>> = TreeMap()
+    val twPositions: HashMap<String, MutableList<Int>> = HashMap()
 
     /** Adding positions for all words from document dictionary */
     init {
