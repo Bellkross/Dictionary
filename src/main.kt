@@ -11,6 +11,24 @@ var dictionary: Dictionary = Dictionary()
 
 val helper = Helper()
 
+/*
+
+All txt files -> 215 MB
+InvertedIndexes -> 25 MB
+Result -> 14 451 KB
+Time -> 9501 sec(2.63 h)
+
+
+file fileII.txt and 0_0outputInvertedIndex.txt merged into fileII.txt
+file fileII.txt and 0_11outputInvertedIndex.txt merged into fileII.txt
+file fileII.txt and 11_20outputInvertedIndex.txt merged into fileII.txt
+file fileII.txt and 20_44outputInvertedIndex.txt merged into fileII.txt
+file fileII.txt and 44_60outputInvertedIndex.txt merged into fileII.txt
+file fileII.txt and 60_81outputInvertedIndex.txt merged into fileII.txt
+file fileII.txt and 81_128outputInvertedIndex.txt merged into fileII.txt
+file fileII.txt and last_outputInvertedIndex.txt merged into fileII.txt
+Time -> 9501 sec
+ */
 fun main(args: Array<String>) {
     val resFiles = ArrayList<File>()
     var fileInvertedIndex : File
