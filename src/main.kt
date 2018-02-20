@@ -19,7 +19,7 @@ fun main(args: Array<String>) {
     helper.merge(File("D:\\IntelIJ\\Dictionary\\files").listFiles())
     val time2 = LocalTime.now().toNanoOfDay()
     println("Time of merging -> ${(time2 - time1) / 1000000000} sec")
-    println("All time -> ${(time11 - time2) / 1000000000} sec")
+    println("All time -> ${(time2 - time1) / 1000000000} sec")
 
 }
 
