@@ -21,6 +21,7 @@ class Dictionary {
 
         list.addAll(invertedIndex.keys)
         list = TreeSet<String>(list)
+        System.gc()
 
     }
 

@@ -19,10 +19,6 @@ class Document(pathname: String, val id: Int) {
     /** Position of each word in document */
     var positions: HashMap<String, MutableList<Int>> = HashMap()
 
-    /** two-word dictionary and positions */
-    val twDictionary: MutableList<String> = ArrayList()
-    val twPositions: HashMap<String, MutableList<Int>> = HashMap()
-
     /** Adding positions for all words from document dictionary */
     init {
         var list: MutableList<Int>
@@ -35,22 +31,6 @@ class Document(pathname: String, val id: Int) {
                 positions[k] = list
             }
         }
-
-        dictionary.forEachIndexed { i, k ->
-            if (i + 2 < dictionary.size && k != "") {
-                twDictionary.add(k + " " + dictionary[i + 1])
-            }
-        }
-
-        twDictionary.forEachIndexed { i, k ->
-            if (twPositions.containsKey(k)) {
-                twPositions[k]?.add(i)
-            } else {
-                list = ArrayList(1)
-                list.add(i)
-                twPositions[k] = list
-            }
-        }
-
+        System.gc()
     }
 }
