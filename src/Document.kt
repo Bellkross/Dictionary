@@ -1,7 +1,4 @@
 import java.io.File
-import java.util.*
-import kotlin.collections.ArrayList
-import kotlin.collections.HashMap
 
 class Document(pathname: String, val id: Int) {
 
@@ -31,6 +28,5 @@ class Document(pathname: String, val id: Int) {
                 positions[k] = list
             }
         }
-        System.gc()
     }
 }

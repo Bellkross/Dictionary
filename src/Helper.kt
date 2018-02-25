@@ -1,9 +1,9 @@
 import java.io.File
 import java.util.*
 import kotlin.collections.ArrayList
+import kotlin.math.roundToInt
 
 class Helper {
-
 
     fun merge(files: Array<File>) {
         val brs = files.map { it.bufferedReader() }
@@ -38,9 +38,12 @@ class Helper {
             }
 
             if (allEquals(strings)) {
-                brs.forEachIndexed { i, _ ->
-                    if (strings[i] != null)
-                        strings[i] = brs[i].readLine()
+
+                if (strings[0] != null)
+                    bw.append("${strings[0]}\n")
+                brs.forEachIndexed { j, _ ->
+                    if (strings[j] != null)
+                        strings[j] = brs[j].readLine()
                 }
 
                 index.clear()
@@ -89,4 +92,9 @@ class Helper {
         return result
     }
 
+    fun round(value: Double): Int {
+        val i: Int = value.roundToInt()
+        val k: Double = value - i
+        return if (k > 0) i + 1 else i
+    }
 }
