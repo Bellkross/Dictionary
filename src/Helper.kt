@@ -1,9 +1,15 @@
 import java.io.File
+import java.io.FileOutputStream
 import java.util.*
 import kotlin.collections.ArrayList
-import kotlin.math.roundToInt
+import kotlin.experimental.inv
 
 class Helper {
+
+    companion object {
+        val lim = 200000000
+    }
+
 
     fun merge(files: Array<File>) {
         val brs = files.map { it.bufferedReader() }
@@ -67,6 +73,95 @@ class Helper {
         bw.close()
     }
 
+    fun mergeBytes(files: Array<File>) {
+        val brs = files.map { it.bufferedReader() }
+        val fileInvIndex = File("compressed\\invertedIndex.txt")
+        val fileDictionary = File("compressed\\dictionary.txt")
+        val filePointer = File("compressed\\pointers.txt")
+
+        val fosII = FileOutputStream(fileInvIndex)
+        val fosD = FileOutputStream(fileDictionary)
+        val fosP = FileOutputStream(filePointer)
+        var prev = 0//for p on D
+        var number = 0//number of word for p on II
+
+        val strings = ArrayList<String?>()
+        val index: TreeMap<String, TreeSet<Int>> = TreeMap()
+
+        var word = ""
+        var i = 0
+        while (i++ < brs.size) {
+            strings.add("")
+        }
+
+        brs.forEachIndexed { i, br ->
+            strings[i] = br.readLine()
+        }
+
+        while (haveOneNotNull(strings)) {
+            i = 0
+            while (i < strings.size) {
+                if (strings[i] != null) {
+                    word = getWordFromIndex(strings[i])
+                    if (index.containsKey(word)) {
+                        index[word]!!.addAll(parseStringToIndex(strings[i]!!))
+                    } else {
+                        index[word] = TreeSet()
+                        index[word]!!.addAll(parseStringToIndex(strings[i]!!))
+                    }
+                }
+                i++
+            }
+
+            if (allEquals(strings)) {
+
+                if (strings[0] != null) {
+                    //here
+                    val myWord = index.keys.first()
+                    val myIndex = index[index.keys.first()]!!
+                    fosII.write(fromListToByteArray(vbEncode(myIndex.toMutableList())))
+                    fosD.write(myWord.toByteArray())
+                    fosP.write("${myIndex.size},${prev + myWord.length},${number++}\n".toByteArray())
+                    prev += myWord.length
+                    fosII.flush()
+                    fosD.flush()
+                    fosP.flush()
+                }
+                brs.forEachIndexed { j, _ ->
+                    if (strings[j] != null)
+                        strings[j] = brs[j].readLine()
+                }
+
+                index.clear()
+            } else {
+
+                //here
+                val myWord = index.keys.first()
+                val myIndex = index[index.keys.first()]!!
+                fosII.write(fromListToByteArray(vbEncode(myIndex.toMutableList())))
+                fosD.write(myWord.toByteArray())
+                fosP.write("${myIndex.size},${prev + myWord.length},${number++}\n".toByteArray())
+                prev += myWord.length
+                fosII.flush()
+                fosD.flush()
+                fosP.flush()
+
+                i = 0
+                while (i < strings.size) {
+                    if (strings[i] != null &&
+                            getWordFromIndex(strings[i]) == index.keys.first()) {
+                        strings[i] = brs[i].readLine()
+                    }
+                    i++
+                }
+                index[index.keys.first()]!!.clear()
+                index.remove(index.keys.first())
+            }
+        }
+        brs.forEach { it.close() }
+        fosII.close()
+    }
+
     private fun allEquals(strings: ArrayList<String?>): Boolean {
         strings.forEach { it1 ->
             strings.forEach { it2 ->
@@ -92,9 +187,70 @@ class Helper {
         return result
     }
 
-    fun round(value: Double): Int {
-        val i: Int = value.roundToInt()
-        val k: Double = value - i
-        return if (k > 0) i + 1 else i
+    fun vbEncodeNumber(value: Int): MutableList<Byte> {
+        var n = value
+        var bytes: MutableList<Byte> = ArrayList()
+        while (true) {
+            bytes = prepend(bytes, n % 128)
+            if (n < 128) {
+                break
+            }
+            n /= 128
+        }
+        bytes[bytes.lastIndex] = bytes[bytes.lastIndex].dec().inv()
+        return bytes
+    }
+
+    private fun prepend(bytes: MutableList<Byte>, n: Int): MutableList<Byte> {
+        val res: MutableList<Byte> = ArrayList()
+        val byte: Byte = n.toByte()
+        res.add(byte)
+        res.addAll(bytes)
+        return res
+    }
+
+    fun vbEncode(numbers: MutableList<Int>): MutableList<Byte> {
+        val res: MutableList<Byte> = ArrayList()
+        numbers.forEach { res.addAll(vbEncodeNumber(it)) }
+        return res
+    }
+
+    fun vbDecode(numbers: ByteArray): MutableList<Int> {
+        val res: MutableList<Int> = ArrayList()
+        var n = 0
+        numbers.forEach {
+            if (it > 0) {
+                n = 128 * n - it
+            } else {
+                n = 128 * n + it
+                res.add(n * (-1))
+                n = 0
+            }
+        }
+        return res
+    }
+
+    fun fromListToByteArray(list: MutableList<Byte>): ByteArray {
+        val array = ByteArray(list.size)
+        list.forEachIndexed { i, byte -> array[i] = byte }
+        return array
+    }
+
+    private fun split(file: File, path : String) {
+        val newFile = File(path+file.nameWithoutExtension + "1.txt")
+        val byteArray = file.readBytes()
+        file.writeBytes(byteArray.copyOf(byteArray.size / 2))
+        newFile.appendBytes(byteArray.copyOfRange(byteArray.size / 2, byteArray.size))
+    }
+
+    fun split(files: Array<File>, path : String) {
+        files.filter { (it.length() > lim) }.forEach { split(it, path) }
+    }
+
+    fun check(files: Array<File>) : Boolean {
+        files.forEach {
+            if(it.length() > lim) return false
+        }
+        return true
     }
 }

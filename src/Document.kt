@@ -11,7 +11,7 @@ class Document(pathname: String, val id: Int) {
     private val content: String = String(File(pathname).readBytes())
 
     /** All content of document in List<String> object */
-    val dictionary: MutableList<String> = content.split(regex).filter { string -> string != "" }.toMutableList()
+    val dictionary: MutableList<String> = content.split(regex).filter{it != ""}.toMutableList()
 
     /** Position of each word in document */
     var positions: HashMap<String, MutableList<Int>> = HashMap()
@@ -29,4 +29,5 @@ class Document(pathname: String, val id: Int) {
             }
         }
     }
+
 }
