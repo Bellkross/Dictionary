@@ -385,7 +385,7 @@ class Helper {
             weight[it] = countWeight(findWordRangeIndex(it))
         }
 
-        return отриматиАйдіНайкращихФайлів(weight, lim)
+        return getIdsOfTheBestFiles(weight, lim)
     }
 
     fun countWeight(index: HashMap<Int, HashSet<Meta>>): HashMap<Int, Float> {
@@ -402,7 +402,7 @@ class Helper {
         return wght
     }
 
-    fun отриматиАйдіНайкращихФайлів(weight: HashMap<String, HashMap<Int, Float>>, lim: Int = 10): List<Int> {
+    fun getIdsOfTheBestFiles(weight: HashMap<String, HashMap<Int, Float>>, lim: Int = 10): List<Int> {
         val all: HashMap<Int, Float> = HashMap()
         weight.keys.forEach {
             all.putAll(weight[it]!!)
