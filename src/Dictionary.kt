@@ -1,48 +1,84 @@
 import java.lang.Math.abs
-import java.util.*
-import kotlin.collections.ArrayList
-import kotlin.collections.HashMap
 
 class Dictionary {
 
     var list: MutableList<String> = ArrayList()
-    var invertedIndex: HashMap<String, MutableList<Int>> = HashMap()
+
+    var invertedIndex: HashMap<String, HashMap<Int, MutableList<Meta>>> = HashMap()
+
+    var bodyIndex: HashMap<String, MutableList<Int>> = HashMap()//body
+
+    var titleIndex: HashMap<String, MutableList<Int>> = HashMap()
+
+    var authorIndex: HashMap<String, MutableList<Int>> = HashMap()
+
+    var releaseDateIndex: HashMap<String, MutableList<Int>> = HashMap()
 
     fun addDocument(document: Document) {
+
         val documentId = document.id
 
         val tokens = document.dictionary
 
         tokens.forEach { k ->
-            if (!invertedIndex.contains(k)) {
-                invertedIndex[k] = ArrayList()
-                invertedIndex[k]!!.add(documentId)
-            } else {
-                if (!invertedIndex[k]!!.contains(documentId))
-                    invertedIndex[k]!!.add(documentId)
+            if (!bodyIndex.contains(k)) {
+                bodyIndex[k] = ArrayList()
+                bodyIndex[k]!!.add(documentId)
+                invertedIndex[k] = HashMap()
+                invertedIndex[k]!![documentId] = ArrayList()
+                invertedIndex[k]!![documentId]!!.add(Meta.BODY)
+            } else if (!bodyIndex[k]!!.contains(documentId)) {
+                bodyIndex[k]!!.add(documentId)
+                invertedIndex[k]!![documentId] = ArrayList()
+                invertedIndex[k]!![documentId]!!.add(Meta.BODY)
             }
         }
 
-        list.addAll(invertedIndex.keys)
-    }
-
-
-    private fun intersect(vector1: MutableList<Int>, vector2: MutableList<Int>, distance: Int): MutableList<Int> {
-        val resList: MutableList<Int> = ArrayList()
-        var i = 0
-        var j = 0
-        while (i < vector1.size && j < vector2.size) {
-            when {
-                distance >= abs(vector2[j] - vector1[i]) -> {
-                    resList.add(vector1[i++])
-                    ++j
-                }
-                distance < abs(vector2[j] - vector1[i]) -> ++i
-                else -> ++j
+        document.title.forEach { k ->
+            if (!titleIndex.containsKey(k)) {
+                titleIndex[k] = ArrayList()
+                titleIndex[k]!!.add(documentId)
+                invertedIndex[k] = HashMap()
+                invertedIndex[k]!![documentId] = ArrayList()
+                invertedIndex[k]!![documentId]!!.add(Meta.TITLE)
+            } else if (!titleIndex[k]!!.contains(documentId)) {
+                titleIndex[k]!!.add(documentId)
+                if (!invertedIndex.containsKey(k))
+                    invertedIndex[k] = HashMap()
+                invertedIndex[k]!![documentId] = ArrayList()
+                invertedIndex[k]!![documentId]!!.add(Meta.TITLE)
             }
         }
 
-        return resList
+        document.author.forEach { k ->
+            if (!authorIndex.containsKey(k)) {
+                authorIndex[k] = ArrayList()
+                authorIndex[k]!!.add(documentId)
+                invertedIndex[k] = HashMap()
+                invertedIndex[k]!![documentId] = ArrayList()
+                invertedIndex[k]!![documentId]!!.add(Meta.AUTHOR)
+            } else if (!authorIndex[k]!!.contains(documentId)) {
+                authorIndex[k]!!.add(documentId)
+                invertedIndex[k]!![documentId] = ArrayList()
+                invertedIndex[k]!![documentId]!!.add(Meta.AUTHOR)
+            }
+        }
+
+        document.releaseDate.forEach { k ->
+            if (!releaseDateIndex.containsKey(k)) {
+                releaseDateIndex[k] = ArrayList()
+                releaseDateIndex[k]!!.add(documentId)
+                invertedIndex[k] = HashMap()
+                invertedIndex[k]!![documentId] = ArrayList()
+                invertedIndex[k]!![documentId]!!.add(Meta.DATE)
+            } else if (!releaseDateIndex[k]!!.contains(documentId)) {
+                releaseDateIndex[k]!!.add(documentId)
+                invertedIndex[k]!![documentId] = ArrayList()
+                invertedIndex[k]!![documentId]!!.add(Meta.DATE)
+            }
+        }
+
+        list.addAll(bodyIndex.keys)
     }
 
 }

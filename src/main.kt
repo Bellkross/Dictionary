@@ -1,27 +1,22 @@
 import java.io.File
-import java.time.LocalTime
 import java.util.TreeSet
+import kotlin.collections.ArrayList
+import kotlin.collections.HashMap
+import kotlin.collections.forEach
+import kotlin.collections.forEachIndexed
+import kotlin.collections.toMutableList
 
-const val mFilepath = "D:\\IntelIJ\\test\\"
+const val mFilepath = "D:\\IntelIJ\\txt2\\"
 var files = File(mFilepath).listFiles()
 
 var dictionary: Dictionary = Dictionary()
 
 val helper = Helper()
 
-/*
-Collection -> 4,83 GB
-Size of inverted index -> 114 MB
-Size of dictionary -> 2,4 GB
-Size of pointers -> 1,05 GB
-Together -> 3,57 GB
-Time of indexing -> 5515 sec (1h32m)
-Time of merging+compressing -> 3237 sec (54 min)
-All time -> 2h 26m
- */
 fun main(args: Array<String>) {
 
-
+    println(helper.range("AAA"))
+    /*
     while (!helper.check(files)) {
         helper.split(files, mFilepath)
         files = File(mFilepath).listFiles()
@@ -31,12 +26,12 @@ fun main(args: Array<String>) {
     val time22 = LocalTime.now().toNanoOfDay()
     println("Time of indexing -> ${(time22 - time11) / 1000000000} sec")
 
-
     val time1: Long = LocalTime.now().toNanoOfDay()
-    helper.mergeBytes(File("D:\\IntelIJ\\Dictionary\\index").listFiles())
+    helper.mergeRange(File("D:\\IntelIJ\\Dictionary\\index").listFiles())
     val time2 = LocalTime.now().toNanoOfDay()
     println("Time of merging -> ${(time2 - time1) / 1000000000} sec")
     //println("All time -> ${(time2 - time11) / 1000000000} sec")
+    */
 
 }
 
@@ -46,16 +41,18 @@ fun indexing(): ArrayList<File> {
     var fileInvertedIndex: File
     var doc: Document
 
-    val lim = 5049619648
+    //val lim = 5049619648
+    val lim = 108183696
 
     var j = 0
     var count = 0
+    val minCount = 80
 
     files.forEachIndexed { i, file ->
         doc = Document(file.absolutePath, i)
         dictionary.addDocument(doc)
-        if (Runtime.getRuntime().freeMemory() < lim||++count>100) {
-            println("free memory < $lim bytes or files > 100")
+        if (Runtime.getRuntime().freeMemory() < lim || ++count > minCount) {
+            println("free memory < $lim bytes or files > $minCount")
             fileInvertedIndex = File("D:\\IntelIJ\\Dictionary\\index\\${j}_${i}_invertedIndex.txt")
             resFiles.add(fileInvertedIndex)
             fileInvertedIndex.bufferedWriter().use { out ->
@@ -66,7 +63,10 @@ fun indexing(): ArrayList<File> {
             }
 
             count = 0
-            dictionary.invertedIndex.clear()
+            dictionary.invertedIndex = HashMap()
+            dictionary.bodyIndex.clear()
+            dictionary.authorIndex.clear()
+            dictionary.releaseDateIndex.clear()
             dictionary.list.clear()
             j = i
         }
