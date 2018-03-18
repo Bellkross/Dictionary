@@ -1,84 +1,43 @@
-import java.lang.Math.abs
+import kotlin.math.log2
 
 class Dictionary {
 
+    //document count
+    var n = 0
+
     var list: MutableList<String> = ArrayList()
 
-    var invertedIndex: HashMap<String, HashMap<Int, MutableList<Meta>>> = HashMap()
+    var invertedIndex: HashMap<String, MutableList<Int>> = HashMap()
 
-    var bodyIndex: HashMap<String, MutableList<Int>> = HashMap()//body
-
-    var titleIndex: HashMap<String, MutableList<Int>> = HashMap()
-
-    var authorIndex: HashMap<String, MutableList<Int>> = HashMap()
-
-    var releaseDateIndex: HashMap<String, MutableList<Int>> = HashMap()
+    //term frequency
+    //key -> word, document id, value -> frequency
+    var tf: HashMap<Pair<String, Int>, Int> = HashMap()
 
     fun addDocument(document: Document) {
+        ++n
 
         val documentId = document.id
 
-        val tokens = document.dictionary
-
-        tokens.forEach { k ->
-            if (!bodyIndex.contains(k)) {
-                bodyIndex[k] = ArrayList()
-                bodyIndex[k]!!.add(documentId)
-                invertedIndex[k] = HashMap()
-                invertedIndex[k]!![documentId] = ArrayList()
-                invertedIndex[k]!![documentId]!!.add(Meta.BODY)
-            } else if (!bodyIndex[k]!!.contains(documentId)) {
-                bodyIndex[k]!!.add(documentId)
-                invertedIndex[k]!![documentId] = ArrayList()
-                invertedIndex[k]!![documentId]!!.add(Meta.BODY)
+        document.dictionary.forEach { k ->
+            if (!invertedIndex.contains(k)) {
+                invertedIndex[k] = ArrayList()
+                invertedIndex[k]!!.add(documentId)
+            } else if (!invertedIndex[k]!!.contains(documentId)) {
+                invertedIndex[k]!!.add(documentId)
             }
+
+            val key: Pair<String, Int> = Pair(k,documentId)
+
+            tf[key] = if (document.tf.containsKey(k)) {
+                if (tf.containsKey(key))
+                    tf[key]!! + document.tf[k]!!
+                else
+                    document.tf[k]!!
+            } else 0
+
         }
 
-        document.title.forEach { k ->
-            if (!titleIndex.containsKey(k)) {
-                titleIndex[k] = ArrayList()
-                titleIndex[k]!!.add(documentId)
-                invertedIndex[k] = HashMap()
-                invertedIndex[k]!![documentId] = ArrayList()
-                invertedIndex[k]!![documentId]!!.add(Meta.TITLE)
-            } else if (!titleIndex[k]!!.contains(documentId)) {
-                titleIndex[k]!!.add(documentId)
-                if (!invertedIndex.containsKey(k))
-                    invertedIndex[k] = HashMap()
-                invertedIndex[k]!![documentId] = ArrayList()
-                invertedIndex[k]!![documentId]!!.add(Meta.TITLE)
-            }
-        }
-
-        document.author.forEach { k ->
-            if (!authorIndex.containsKey(k)) {
-                authorIndex[k] = ArrayList()
-                authorIndex[k]!!.add(documentId)
-                invertedIndex[k] = HashMap()
-                invertedIndex[k]!![documentId] = ArrayList()
-                invertedIndex[k]!![documentId]!!.add(Meta.AUTHOR)
-            } else if (!authorIndex[k]!!.contains(documentId)) {
-                authorIndex[k]!!.add(documentId)
-                invertedIndex[k]!![documentId] = ArrayList()
-                invertedIndex[k]!![documentId]!!.add(Meta.AUTHOR)
-            }
-        }
-
-        document.releaseDate.forEach { k ->
-            if (!releaseDateIndex.containsKey(k)) {
-                releaseDateIndex[k] = ArrayList()
-                releaseDateIndex[k]!!.add(documentId)
-                invertedIndex[k] = HashMap()
-                invertedIndex[k]!![documentId] = ArrayList()
-                invertedIndex[k]!![documentId]!!.add(Meta.DATE)
-            } else if (!releaseDateIndex[k]!!.contains(documentId)) {
-                releaseDateIndex[k]!!.add(documentId)
-                invertedIndex[k]!![documentId] = ArrayList()
-                invertedIndex[k]!![documentId]!!.add(Meta.DATE)
-            }
-        }
-
-        list.addAll(bodyIndex.keys)
+        list.addAll(invertedIndex.keys)
     }
 
 }
