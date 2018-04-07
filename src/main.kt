@@ -11,12 +11,12 @@ var dictionary: Dictionary = Dictionary()
 
 val helper = Helper()
 fun main(args: Array<String>) {
-    /*
     val time1: Long = LocalTime.now().toNanoOfDay()
-    println(helper.range("each epoch will be"))
+    println(helper.range("meinertzhageni"))
     val time2: Long = LocalTime.now().toNanoOfDay()
     println("Time -> ${(time2 - time1) / 1000000} milli sec")
-    */
+    //indexing and merge
+    /*
     while (!helper.check(files)) {
         helper.split(files, mFilepath)
         files = File(mFilepath).listFiles()
@@ -31,6 +31,7 @@ fun main(args: Array<String>) {
     val time2 = LocalTime.now().toNanoOfDay()
     println("Time of merging -> ${(time2 - time1) / 1000000000} sec")
     //println("All time -> ${(time2 - time11) / 1000000000} sec")
+    */
 
 }
 
