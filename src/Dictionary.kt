@@ -1,43 +1,82 @@
-import kotlin.math.log2
-
 class Dictionary {
-
-    //document count
-    var n = 0
 
     var list: MutableList<String> = ArrayList()
 
-    var invertedIndex: HashMap<String, MutableList<Int>> = HashMap()
+    var invertedIndex: HashMap<String, HashMap<Int, MutableList<Meta>>> = HashMap()
 
-    //term frequency
-    //key -> word, document id, value -> frequency
-    var tf: HashMap<Pair<String, Int>, Int> = HashMap()
+    var bodyIndex: HashMap<String, MutableList<Int>> = HashMap()//body
 
-    fun addDocument(document: Document) {
-        ++n
+    var titleIndex: HashMap<String, MutableList<Int>> = HashMap()
 
-        val documentId = document.id
+    var authorIndex: HashMap<String, MutableList<Int>> = HashMap()
 
-        document.dictionary.forEach { k ->
-            if (!invertedIndex.contains(k)) {
-                invertedIndex[k] = ArrayList()
-                invertedIndex[k]!!.add(documentId)
-            } else if (!invertedIndex[k]!!.contains(documentId)) {
-                invertedIndex[k]!!.add(documentId)
+    var releaseDateIndex: HashMap<String, MutableList<Int>> = HashMap()
+
+    fun addDocument(myDocument: MyDocument) {
+
+        val documentId = myDocument.id
+
+        val tokens = myDocument.dictionary
+
+        tokens.forEach { k ->
+            if (!bodyIndex.contains(k)) {
+                bodyIndex[k] = ArrayList()
+                bodyIndex[k]!!.add(documentId)
+                invertedIndex[k] = HashMap()
+                invertedIndex[k]!![documentId] = ArrayList()
+                invertedIndex[k]!![documentId]!!.add(Meta.BODY)
+            } else if (!bodyIndex[k]!!.contains(documentId)) {
+                bodyIndex[k]!!.add(documentId)
+                invertedIndex[k]!![documentId] = ArrayList()
+                invertedIndex[k]!![documentId]!!.add(Meta.BODY)
             }
-
-            val key: Pair<String, Int> = Pair(k,documentId)
-
-            tf[key] = if (document.tf.containsKey(k)) {
-                if (tf.containsKey(key))
-                    tf[key]!! + document.tf[k]!!
-                else
-                    document.tf[k]!!
-            } else 0
-
         }
 
-        list.addAll(invertedIndex.keys)
+        myDocument.title.forEach { k ->
+            if (!titleIndex.containsKey(k)) {
+                titleIndex[k] = ArrayList()
+                titleIndex[k]!!.add(documentId)
+                invertedIndex[k] = HashMap()
+                invertedIndex[k]!![documentId] = ArrayList()
+                invertedIndex[k]!![documentId]!!.add(Meta.TITLE)
+            } else if (!titleIndex[k]!!.contains(documentId)) {
+                titleIndex[k]!!.add(documentId)
+                if (!invertedIndex.containsKey(k))
+                    invertedIndex[k] = HashMap()
+                invertedIndex[k]!![documentId] = ArrayList()
+                invertedIndex[k]!![documentId]!!.add(Meta.TITLE)
+            }
+        }
+
+        myDocument.author.forEach { k ->
+            if (!authorIndex.containsKey(k)) {
+                authorIndex[k] = ArrayList()
+                authorIndex[k]!!.add(documentId)
+                invertedIndex[k] = HashMap()
+                invertedIndex[k]!![documentId] = ArrayList()
+                invertedIndex[k]!![documentId]!!.add(Meta.AUTHOR)
+            } else if (!authorIndex[k]!!.contains(documentId)) {
+                authorIndex[k]!!.add(documentId)
+                invertedIndex[k]!![documentId] = ArrayList()
+                invertedIndex[k]!![documentId]!!.add(Meta.AUTHOR)
+            }
+        }
+
+        myDocument.releaseDate.forEach { k ->
+            if (!releaseDateIndex.containsKey(k)) {
+                releaseDateIndex[k] = ArrayList()
+                releaseDateIndex[k]!!.add(documentId)
+                invertedIndex[k] = HashMap()
+                invertedIndex[k]!![documentId] = ArrayList()
+                invertedIndex[k]!![documentId]!!.add(Meta.DATE)
+            } else if (!releaseDateIndex[k]!!.contains(documentId)) {
+                releaseDateIndex[k]!!.add(documentId)
+                invertedIndex[k]!![documentId] = ArrayList()
+                invertedIndex[k]!![documentId]!!.add(Meta.DATE)
+            }
+        }
+
+        list.addAll(bodyIndex.keys)
     }
 
 }

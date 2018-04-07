@@ -2,34 +2,21 @@ import java.io.File
 import java.time.LocalTime
 import java.util.TreeSet
 import kotlin.collections.ArrayList
+import kotlin.collections.HashMap
 
-const val mFilepath = "D:\\IntelIJ\\txt2\\"
+const val mFilepath = "D:\\IntelIJ\\fb2\\"
 var files = File(mFilepath).listFiles()
 
 var dictionary: Dictionary = Dictionary()
-lateinit var clasterizator: Clasterizator
 
 val helper = Helper()
-
 fun main(args: Array<String>) {
-
-
-    indxng()
-
     /*
-    println(clasterizator.sim(clasterizator.docVectors[1]!!.map { it.second }.toMutableList(),clasterizator.docVectors[0]!!.map { it.second }.toMutableList()))
-    println(clasterizator.sim(clasterizator.docVectors[1]!!.map { it.second }.toMutableList(),clasterizator.docVectors[1]!!.map { it.second }.toMutableList()))
-    println(clasterizator.sim(clasterizator.docVectors[1]!!.map { it.second }.toMutableList(),clasterizator.docVectors[2]!!.map { it.second }.toMutableList()))
-    println(clasterizator.sim(clasterizator.docVectors[1]!!.map { it.second }.toMutableList(),clasterizator.docVectors[3]!!.map { it.second }.toMutableList()))
-    println(clasterizator.sim(clasterizator.docVectors[1]!!.map { it.second }.toMutableList(),clasterizator.docVectors[4]!!.map { it.second }.toMutableList()))
-    println(clasterizator.sim(clasterizator.docVectors[1]!!.map { it.second }.toMutableList(),clasterizator.docVectors[5]!!.map { it.second }.toMutableList()))
-    println(clasterizator.sim(clasterizator.docVectors[1]!!.map { it.second }.toMutableList(),clasterizator.docVectors[6]!!.map { it.second }.toMutableList()))
-    println(clasterizator.sim(clasterizator.docVectors[1]!!.map { it.second }.toMutableList(),clasterizator.docVectors[7]!!.map { it.second }.toMutableList()))
-    println(clasterizator.sim(clasterizator.docVectors[1]!!.map { it.second }.toMutableList(),clasterizator.docVectors[8]!!.map { it.second }.toMutableList()))
-    println(clasterizator.sim(clasterizator.docVectors[1]!!.map { it.second }.toMutableList(),clasterizator.docVectors[8]!!.map { it.second }.toMutableList()))
+    val time1: Long = LocalTime.now().toNanoOfDay()
+    println(helper.range("each epoch will be"))
+    val time2: Long = LocalTime.now().toNanoOfDay()
+    println("Time -> ${(time2 - time1) / 1000000} milli sec")
     */
-
-    /*
     while (!helper.check(files)) {
         helper.split(files, mFilepath)
         files = File(mFilepath).listFiles()
@@ -40,32 +27,31 @@ fun main(args: Array<String>) {
     println("Time of indexing -> ${(time22 - time11) / 1000000000} sec")
 
     val time1: Long = LocalTime.now().toNanoOfDay()
-    helper.merge(File("D:\\IntelIJ\\Dictionary\\index").listFiles())
+    helper.mergeRange(File("D:\\IntelIJ\\Dictionary\\index").listFiles())
     val time2 = LocalTime.now().toNanoOfDay()
     println("Time of merging -> ${(time2 - time1) / 1000000000} sec")
     //println("All time -> ${(time2 - time11) / 1000000000} sec")
-    */
+
 }
 
 fun indexing(): ArrayList<File> {
 
     val resFiles = ArrayList<File>()
     var fileInvertedIndex: File
-    //var fileTf: File
-    var doc: Document
+    var doc: MyDocument
 
-    val lim = 108183696
+    val lim = 5549619648
+    //val lim = 108183696
 
     var j = 0
     var count = 0
-    val minCount = 30
+    val minCount = 100
 
     files.forEachIndexed { i, file ->
-        doc = Document(file.absolutePath, i)
+        doc = MyDocument(file.absolutePath, i)
         dictionary.addDocument(doc)
         if (Runtime.getRuntime().freeMemory() < lim || ++count > minCount) {
             println("free memory < $lim bytes or files > $minCount")
-            //fileTf = File("D:\\IntelIJ\\Dictionary\\index\\${j}_${i}_tf.txt")
             fileInvertedIndex = File("D:\\IntelIJ\\Dictionary\\index\\${j}_${i}_invertedIndex.txt")
             resFiles.add(fileInvertedIndex)
             fileInvertedIndex.bufferedWriter().use { out ->
@@ -76,11 +62,13 @@ fun indexing(): ArrayList<File> {
             }
 
             count = 0
-            dictionary.invertedIndex.clear()
+            dictionary.invertedIndex = HashMap()
+            dictionary.bodyIndex.clear()
+            dictionary.authorIndex.clear()
+            dictionary.releaseDateIndex.clear()
             dictionary.list.clear()
             j = i
         }
-        println("file #$i / ${files.size} indexed, memory -> ${Runtime.getRuntime().freeMemory()}")
         System.gc()
     }
 
@@ -98,17 +86,5 @@ fun indexing(): ArrayList<File> {
 
 
     return resFiles
-
-}
-
-fun indxng() {
-
-    files.forEachIndexed { i, file ->
-        dictionary.addDocument(Document(file.absolutePath, i))
-        println("file #${i} / ${files.size-1} indexed, memory -> ${Runtime.getRuntime().freeMemory()}")
-        System.gc()
-    }
-
-    clasterizator = Clasterizator(dictionary)
 
 }
