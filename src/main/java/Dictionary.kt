@@ -1,4 +1,4 @@
-import kotlin.math.log2
+import smile.nlp.relevance.BM25
 
 class Dictionary {
 
@@ -12,6 +12,10 @@ class Dictionary {
     //term frequency
     //key -> word, document id, value -> frequency
     var tf: HashMap<Pair<String, Int>, Int> = HashMap()
+
+    var scoreBM25: HashMap<Pair<String, Int>, Double> = HashMap()
+    var ranker: BM25 = BM25()
+
 
     fun addDocument(document: Document) {
         ++n
@@ -35,6 +39,10 @@ class Dictionary {
                     document.tf[k]!!
             } else 0
 
+        }
+
+        tf.keys.forEach{ key ->
+            scoreBM25[key] = ranker.score(tf[key]!!.toDouble(), 3L, 1L)
         }
 
         list.addAll(invertedIndex.keys)

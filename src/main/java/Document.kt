@@ -1,4 +1,6 @@
 import java.io.File
+import smile.nlp.relevance.BM25
+import smile.nlp.relevance.RelevanceRanker
 
 class Document(pathname: String, val id: Int) {
 
@@ -32,7 +34,6 @@ class Document(pathname: String, val id: Int) {
             }
 
             tf[k] = if (!tf.containsKey(k)) 0 else tf[k]!! + 1
-
         }
     }
 

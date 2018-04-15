@@ -17,6 +17,8 @@ class Clasterizator(val dictionary: Dictionary) {
     //key -> (word, document id), value -> frequency
     var tf: HashMap<Pair<String, Int>, Int> = dictionary.tf
 
+    var scoreBM25: HashMap<Pair<String, Int>, Double> = dictionary.scoreBM25
+
     //document frequency
     //key -> word, value -> frequency
     var df: HashMap<String, Float> = HashMap()
@@ -81,7 +83,6 @@ class Clasterizator(val dictionary: Dictionary) {
         }
     }
 
-    //need to remove 0.00000000000001
     fun sim(v1: MutableList<Float>, v2: MutableList<Float>) = mul(v1, v2) / (sqrt(mul(v1, v1)) * sqrt(mul(v2, v2)) + 0.00000000000001)
 
 
